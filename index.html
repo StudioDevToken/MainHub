@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TokenStudio — Ecosystem & Projects Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #090b10;
+            --surface: rgba(18, 22, 34, 0.7);
+            --surface-hover: rgba(26, 32, 50, 0.85);
+            --border: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(99, 102, 241, 0.5);
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.25);
+            --accent: #22d3ee;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --danger: #ef4444;
+            --card-radius: 18px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Фоновые градиентные свечения */
+        .ambient-glow {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 900px;
+            height: 450px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(34, 211, 238, 0.08) 45%, transparent 70%);
+            filter: blur(100px);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Навигационная панель */
+        header {
+            padding: 24px 0;
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(9, 11, 16, 0.85);
+        }
+
+        .nav-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .logo-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .logo-badge svg {
+            width: 22px;
+            height: 22px;
+            fill: #fff;
+        }
+
+        .logo-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(to right, #fff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .system-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--success);
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            box-shadow: 0 0 8px var(--success);
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.85); }
+        }
+
+        /* Герой-секция */
+        .hero {
+            padding: 70px 0 40px;
+            text-align: center;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 16px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            color: var(--accent);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.4rem, 5vw, 3.8rem);
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -1.5px;
+            margin-bottom: 16px;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, #6366f1 0%, #22d3ee 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            color: var(--text-muted);
+            font-size: 1.15rem;
+            max-width: 620px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Фильтры и панель управления проектами */
+        .controls-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin: 30px 0 28px;
+            padding: 16px 20px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            backdrop-filter: blur(10px);
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            overflow-x: auto;
+        }
+
+        .filter-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .filter-btn.active {
+            background: rgba(99, 102, 241, 0.15);
+            color: #fff;
+            border-color: rgba(99, 102, 241, 0.4);
+        }
+
+        .admin-trigger-btn {
+            background: rgba(99, 102, 241, 0.1);
+            color: #818cf8;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .admin-trigger-btn:hover {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        /* Сетка карточек проектов */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 24px;
+            margin-bottom: 80px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--card-radius);
+            padding: 26px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            backdrop-filter: blur(12px);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            background: var(--surface-hover);
+            border-color: var(--border-hover);
+            box-shadow: 0 16px 30px -10px rgba(0, 0, 0, 0.5), 0 0 20px var(--primary-glow);
+        }
+
+        .card-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        .card-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(34, 211, 238, 0.1);
+            color: var(--accent);
+            border: 1px solid rgba(34, 211, 238, 0.25);
+        }
+
+        .card-content h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .card-content p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.55;
+            margin-bottom: 24px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 18px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .launch-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.92rem;
+            transition: gap 0.2s;
+        }
+
+        .launch-btn:hover {
+            color: var(--accent);
+            gap: 12px;
+        }
+
+        .delete-card-btn {
+            background: transparent;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            display: none;
+            font-size: 0.8rem;
+        }
+
+        .delete-card-btn:hover {
+            color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        body.admin-mode .delete-card-btn {
+            display: inline-block;
+        }
+
+        /* Модальные окна (Админка и Аутентификация) */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(4, 6, 12, 0.85);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: #111522;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            padding: 30px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-header h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .close-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 14px;
+            color: #fff;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            border-color: var(--primary);
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), #4f46e5);
+            color: #fff;
+            padding: 14px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px var(--primary-glow);
+            transition: opacity 0.2s;
+        }
+
+        .submit-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Футер */
+        footer {
+            margin-top: auto;
+            border-top: 1px solid var(--border);
+            padding: 30px 0;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.88rem;
+        }
+
+        .secret-trigger {
+            cursor: pointer;
+            text-decoration: underline;
+            color: #475569;
+            transition: color 0.2s;
+        }
+
+        .secret-trigger:hover {
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-glow"></div>
+
+    <header>
+        <div class="container nav-content">
+            <a href="#" class="logo-group">
+                <div class="logo-badge">
+                    <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                </div>
+                <div class="logo-title">TokenStudio</div>
+            </a>
+            <div class="system-status">
+                <span class="pulse-dot"></span>
+                <span>Runner: Online</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <div class="hero-badge">tokenstudio.online</div>
+            <h1>Единый хаб <span>проектов и сервисов</span></h1>
+            <p>Центральный портал для запуска веб-приложений, мониторинга API и подключения к серверной инфраструктуре.</p>
+        </section>
+
+        <section class="controls-bar">
+            <div class="filter-group">
+                <button class="filter-btn active" data-filter="all">Все проекты</button>
+                <button class="filter-btn" data-filter="web">Веб-приложения</button>
+                <button class="filter-btn" data-filter="server">Серверы / Бэкенд</button>
+                <button class="filter-btn" data-filter="study">Учеба & Образование</button>
+            </div>
+            <button class="admin-trigger-btn" id="openAdminModalBtn">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                Добавить проект
+            </button>
+        </section>
+
+        <div class="projects-grid" id="projectsContainer">
+            <!-- Карточки наполняются динамически через JS -->
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>© 2026 TokenStudio. Развернуто через GitHub Pages на собственном железе.</p>
+            <p style="margin-top: 6px;"><span class="secret-trigger" id="secretFooterTrigger">Управление проектами (Ctrl+Shift+A)</span></p>
+        </div>
+    </footer>
+
+    <!-- Модальное окно авторизации админки -->
+    <div class="modal-overlay" id="authModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Вход в панель управления</h2>
+                <button class="close-btn" onclick="closeModals()">&times;</button>
+            </div>
+            <form id="authForm">
+                <div class="form-group">
+                    <label>Мастер-пароль</label>
+                    <input type="password" id="adminPasswordInput" placeholder="Введите пароль..." required autofocus>
+                </div>
+                <button type="submit" class="submit-btn">Подтвердить доступ</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно добавления проекта -->
+    <div class="modal-overlay" id="projectModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Добавить новый ресурс</h2>
+                <button class="close-btn" onclick="closeModals()">&times;</button>
+            </div>
+            <form id="projectForm">
+                <div class="form-group">
+                    <label>Название проекта</label>
+                    <input type="text" id="pTitle" placeholder="Например: Minecraft SMP" required>
+                </div>
+                <div class="form-group">
+                    <label>Иконка (Эмодзи)</label>
+                    <input type="text" id="pIcon" placeholder="🚀, ⛏️, 🧪, 🛡️" value="🚀" required>
+                </div>
+                <div class="form-group">
+                    <label>Категория</label>
+                    <select id="pCategory">
+                        <option value="web">Веб-приложения</option>
+                        <option value="server">Серверы / Бэкенд</option>
+                        <option value="study">Учеба & Образование</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Бейдж (Статус)</label>
+                    <input type="text" id="pBadge" placeholder="Subdomain, 24/7, v1.0" value="Active">
+                </div>
+                <div class="form-group">
+                    <label>Ссылка / Адрес перехода</label>
+                    <input type="text" id="pUrl" placeholder="https://... или mc.tokenstudio.online" required>
+                </div>
+                <div class="form-group">
+                    <label>Краткое описание</label>
+                    <textarea id="pDesc" rows="3" placeholder="Что делает этот сервис?" required></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Опубликовать в хаб</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const ADMIN_PASS = "admin123"; // Мастер-пароль админки
+        let isAdminAuthenticated = false;
+
+        // Базовые стартовые проекты
+        const defaultProjects = [
+            {
+                id: 1,
+                title: "AntiAD Hub",
+                icon: "🛡️",
+                category: "web",
+                badge: "Web Extension",
+                url: "https://antiad.tokenstudio.online",
+                desc: "Система умной фильтрации контента, видео-скриптов и пропуска рекламных интеграций."
+            },
+            {
+                id: 2,
+                title: "Minecraft Community Server",
+                icon: "⛏️",
+                category: "server",
+                badge: "Port: 25565",
+                url: "mc.tokenstudio.online",
+                desc: "Игровой сервер на Fabric 1.21.1 с кастомными оптимизациями, запущенный на домашней ноде."
+            },
+            {
+                id: 3,
+                title: "Organic Chemistry 10th",
+                icon: "🧪",
+                category: "study",
+                badge: "DTM Prep",
+                url: "#",
+                desc: "Интерактивная подготовка по органической химии для школьных программ и тестирований DTM."
+            }
+        ];
+
+        // Инициализация локального хранилища
+        function getProjects() {
+            const saved = localStorage.getItem('tokenstudio_projects');
+            return saved ? JSON.parse(saved) : defaultProjects;
+        }
+
+        function saveProjects(projects) {
+            localStorage.setItem('tokenstudio_projects', JSON.stringify(projects));
+            renderProjects();
+        }
+
+        // Рендер карточек
+        function renderProjects(filter = 'all') {
+            const container = document.getElementById('projectsContainer');
+            const projects = getProjects();
+            container.innerHTML = '';
+
+            const filtered = filter === 'all' 
+                ? projects 
+                : projects.filter(p => p.category === filter);
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: #64748b; padding: 40px;">В этой категории пока нет проектов.</div>`;
+                return;
+            }
+
+            filtered.forEach(project => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div>
+                        <div class="card-top">
+                            <div class="card-icon">${project.icon}</div>
+                            <span class="card-badge">${project.badge}</span>
+                        </div>
+                        <div class="card-content">
+                            <h3>${escapeHtml(project.title)}</h3>
+                            <p>${escapeHtml(project.desc)}</p>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <a href="${project.url.startsWith('http') ? project.url : 'https://' + project.url}" target="_blank" class="launch-btn">
+                            Открыть
+                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        </a>
+                        <button class="delete-card-btn" onclick="deleteProject(${project.id})">Удалить</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Удаление проекта
+        window.deleteProject = function(id) {
+            if (!confirm('Вы уверены, что хотите удалить этот проект из хаба?')) return;
+            let projects = getProjects();
+            projects = projects.filter(p => p.id !== id);
+            saveProjects(projects);
+        };
+
+        // Логика фильтров
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                renderProjects(btn.dataset.filter);
+            });
+        });
+
+        // Модальные окна
+        const authModal = document.getElementById('authModal');
+        const projectModal = document.getElementById('projectModal');
+
+        function openAdminAction() {
+            if (isAdminAuthenticated) {
+                projectModal.classList.add('active');
+            } else {
+                authModal.classList.add('active');
+                document.getElementById('adminPasswordInput').focus();
+            }
+        }
+
+        function closeModals() {
+            authModal.classList.remove('active');
+            projectModal.classList.remove('active');
+        }
+
+        document.getElementById('openAdminModalBtn').addEventListener('click', openAdminAction);
+        document.getElementById('secretFooterTrigger').addEventListener('click', openAdminAction);
+
+        // Горячие клавиши (Ctrl + Shift + A)
+        window.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a' || e.key === 'Ф' || e.key === 'ф')) {
+                e.preventDefault();
+                openAdminAction();
+            }
+            if (e.key === 'Escape') closeModals();
+        });
+
+        // Вход по паролю
+        document.getElementById('authForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const pass = document.getElementById('adminPasswordInput').value;
+            if (pass === ADMIN_PASS) {
+                isAdminAuthenticated = true;
+                document.body.classList.add('admin-mode');
+                authModal.classList.remove('active');
+                document.getElementById('adminPasswordInput').value = '';
+                projectModal.classList.add('active');
+            } else {
+                alert('Неверный пароль администратора!');
+            }
+        });
+
+        // Добавление проекта из формы
+        document.getElementById('projectForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newProject = {
+                id: Date.now(),
+                title: document.getElementById('pTitle').value.trim(),
+                icon: document.getElementById('pIcon').value.trim() || '🌐',
+                category: document.getElementById('pCategory').value,
+                badge: document.getElementById('pBadge').value.trim() || 'Live',
+                url: document.getElementById('pUrl').value.trim(),
+                desc: document.getElementById('pDesc').value.trim()
+            };
+
+            const projects = getProjects();
+            projects.unshift(newProject);
+            saveProjects(projects);
+
+            document.getElementById('projectForm').reset();
+            closeModals();
+        });
+
+        // Стартовый запуск
+        renderProjects();
+    </script>
+</body>
+</html>
